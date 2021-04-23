@@ -1,0 +1,176 @@
+//
+//  PrefixHeader.pch
+//  MDHealth
+//
+//  Created by 林志军 on 2020/7/28.
+//  Copyright © 2020 林志军. All rights reserved.
+//
+
+#import <Masonry/Masonry.h>
+#import "UIView+Extension.h"
+#import "LZJPublicUtility.h"
+#import "LZJHudTool.h"
+#import "API.h"
+#import "MDConst.h"
+#import "MDNetworkTool.h"
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#define kScreenWidth [UIScreen mainScreen].bounds.size.width
+#define kScreenHeight [UIScreen mainScreen].bounds.size.height
+
+#define kFormatPrice(number)  [LZJPublicUtility formatFloat:number]
+
+//字体适配 7p以上用原来 6减1 5减2
+#define kAdaptFont(number) [UIFont systemFontOfSize:[LZJPublicUtility autoFontSize:number]]
+//根据比例适配字体
+#define kFont(number) [UIFont systemFontOfSize:[LZJPublicUtility adaptFont:number]]
+#define kMediumFont(number) [UIFont systemFontOfSize:[LZJPublicUtility adaptFont:number] weight:UIFontWeightMedium]
+//粗字体适配
+#define kBoldFont(number) [UIFont boldSystemFontOfSize:[LZJPublicUtility autoFontSize:number]]
+
+#define RECT(X,Y,W,H) CGRectMake(X, Y, W, H)
+
+//弱引用
+#define WeakSelf __weak typeof(self) weakSelf = self;
+#define kWeak(type)  __weak typeof(type) weak##type = type;
+
+#ifndef weakify
+    #if DEBUG
+        #if __has_feature(objc_arc)
+        #define weakify(object) autoreleasepool{} __weak __typeof__(object) weak##_##object = object;
+        #else
+        #define weakify(object) autoreleasepool{} __block __typeof__(object) block##_##object = object;
+        #endif
+    #else
+        #if __has_feature(objc_arc)
+        #define weakify(object) try{} @finally{} {} __weak __typeof__(object) weak##_##object = object;
+        #else
+        #define weakify(object) try{} @finally{} {} __block __typeof__(object) block##_##object = object;
+        #endif
+    #endif
+#endif
+
+#ifndef strongify
+    #if DEBUG
+        #if __has_feature(objc_arc)
+        #define strongify(object) autoreleasepool{} __typeof__(object) object = weak##_##object;
+        #else
+        #define strongify(object) autoreleasepool{} __typeof__(object) object = block##_##object;
+        #endif
+    #else
+        #if __has_feature(objc_arc)
+        #define strongify(object) try{} @finally{} __typeof__(object) object = weak##_##object;
+        #else
+        #define strongify(object) try{} @finally{} __typeof__(object) object = block##_##object;
+        #endif
+    #endif
+#endif
+
+
+#define iphoneX ([LZJPublicUtility isIPhoneXSeries])
+
+//控件高度 --适配iphonex
+
+#define kStatusBarHeight [UIApplication sharedApplication].statusBarFrame.size.height
+/// 导航栏高度
+#define kNavBarHeight (iphoneX ? 88 : 64)
+#define kTabBarHeight (iphoneX ? 83 : 49)
+#define kFixIpxBottom(number) ((iphoneX) ? (number + 34): (number))
+
+//方便iPhoneX下隐藏了 navigationBar 适配
+#define kFixIpxTop(number) ((iphoneX) ? (number+24): (number))
+//适配比例)
+
+
+#define kRatioW  kScreenWidth / 375.0
+#define kRatioH  kScreenHeight / 812.0
+#define kMargin  20
+#define kFitW(size)   (CGFloat)(size * kRatioW)
+#define kFitH(size)   (CGFloat)(size * kRatioH)
+//RGB颜色
+#define RGB(r, g, b) [UIColor colorWithRed:(r) / 255.0 green:(g) / 255.0 blue:(b) / 255.0 alpha:1]
+
+//随机RGB
+#define RandomRGB RGB(arc4random_uniform(255), arc4random_uniform(255), arc4random_uniform(255))
+
+//国际化
+#define kLocalized(key)   NSLocalizedString(key, nil)
+
+
+//16进制颜色
+#define COLOR_WITH_HEX(hexValue) [UIColor colorWithRed:((float)((hexValue & 0xFF0000) >> 16)) / 255.0 green:((float)((hexValue & 0xFF00) >> 8)) / 255.0 blue:((float)(hexValue & 0xFF)) / 255.0 alpha:1.0f]
+
+#define RGB_Alpha(r, g, b,a) [UIColor colorWithRed:(r) / 255.0 green:(g) / 255.0 blue:(b) / 255.0 alpha:a]
+
+#define LZJBlueColor [UIColor colorWithRed:57/255.0 green:143/255.0 blue:231/255.0 alpha:1]
+
+#define kText262 COLOR_WITH_HEX(0x262626)
+#define kText171 COLOR_WITH_HEX(0x171721)
+#define kText333 COLOR_WITH_HEX(0x333333)
+#define kText999 COLOR_WITH_HEX(0x999999)
+#define kText666 COLOR_WITH_HEX(0x666666)
+#define kTextEEE COLOR_WITH_HEX(0xEEEEEE)
+#define kText9A9 COLOR_WITH_HEX(0x9A9A9A)
+#define kTextF9F COLOR_WITH_HEX(0xF9F9F9)
+#define kTextF3F COLOR_WITH_HEX(0xF3F3F3)
+#define kTextF4F COLOR_WITH_HEX(0xF4F4F4)
+#define kTextF5F COLOR_WITH_HEX(0xF5F5F5)
+
+#define kBorderD8 COLOR_WITH_HEX(0xD8D8D8)
+#define kPlaceholderDB COLOR_WITH_HEX(0xDBDBDB)
+
+#define kLightGrayColor COLOR_WITH_HEX(0xF4F4F4)
+#define kPlaceholderColor COLOR_WITH_HEX(0xE3E3E5)
+#define kGreenColor RGB(34, 213, 156)
+#define kWhiteColor RGB(255, 255, 255)
+#define kBgColor RGB(245, 245, 245)
+#define kBackgourndColor RGB(244, 244, 244)
+#define kMainColor COLOR_WITH_HEX(0xE52057)
+
+
+#define kRadianToDegree(__ANGLE__) ((__ANGLE__) * 180/M_PI)
+#define kDegreeToRadian(__ANGLE__) ((__ANGLE__) * M_PI/180.0)
+
+
+//--调试
+//#ifdef DEBUG
+#define NSLog(FORMAT, ...) fprintf(stderr,"%s 第%d行,打印结果:%s\n",[[[NSString stringWithUTF8String:__FILE__] lastPathComponent] UTF8String], __LINE__, [[NSString stringWithFormat:FORMAT, ##__VA_ARGS__] UTF8String]);
+//#else
+//#define NSLog(...)
+//#endif
+
+#define USERDEFAULT(key)  [[NSUserDefaults standardUserDefaults] objectForKey:(key)]
+#define kUserDefaults [NSUserDefaults standardUserDefaults]
+
+#define kSysVersion [[UIDevice currentDevice] systemVersion] 
+#define kAppVersion [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]
+
+/**
+ 判断对象是否为空
+ */
+#define kEmptyStr(objStr)        (![objStr isKindOfClass:[NSString class]] || objStr == nil || [objStr length] <= 0 || [objStr isEqualToString:@"<null>"])
+
+#define kEmptyDict(objDict)        (![objDict isKindOfClass:[NSDictionary class]] || objDict == nil)
+
+#define kEmptyArry(objArray)    (![objArray isKindOfClass:[NSArray class]] || objArray == nil || [objArray count] <= 0)
+
+#define kEmptyNum(objNum)        (![objNum isKindOfClass:[NSNumber class]] || objNum == nil)
+
+#define kEmptyData(objData)        (![objData isKindOfClass:[NSData class]] || objData == nil || [objData length] <= 0)
+
+#define kEmptySet(objData)        (![objData isKindOfClass:[NSSet class]] || objData == nil || [objData count] <= 0)
+
+
+#define replaceEmprtStr(str) (kEmptyStr(str) ? @"" : str)
+
+
+#define kIsLogin [USERDEFAULT(@"loginStatus") integerValue]
+
+#define kLightStatusBar [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+#define kBlackStatusBar [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
+#endif /* PrefixHeader_pch */

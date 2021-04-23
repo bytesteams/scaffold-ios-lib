@@ -1,0 +1,28 @@
+# Uncomment the next line to define a global platform for your project
+ platform :ios, '9.0'
+
+inhibit_all_warnings!
+
+target 'RapidDevelop' do
+source 'https://github.com/CocoaPods/Specs.git'
+
+pod 'AFNetworking'
+pod 'Masonry'
+pod 'MJExtension'
+pod 'MJRefresh'
+pod 'IQKeyboardManager'
+pod 'MBProgressHUD'
+pod 'SDWebImage'
+pod 'CYLTableViewPlaceHolder'
+pod 'YYCache'
+pod 'YYText'
+#pod 'FSTextView'
+pod 'MSWeakTimer'
+#pod 'MLeaksFinder'
+pod 'UITableView+FDTemplateLayoutCell'
+pod 'SDCycleScrollView'
+pod 'IDMPhotoBrowser'
+pod 'SCLAlertView-Objective-C'
+pod 'XHLaunchAd'
+
+end
